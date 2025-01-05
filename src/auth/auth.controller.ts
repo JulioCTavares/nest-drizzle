@@ -11,6 +11,7 @@ import {
 import { AuthService } from './auth.service';
 import { RegisterDto, registerSchema } from './dto/register.dto';
 import { LocalAuthGuard } from './guards/local-auth/local-auth.guard';
+import { RefreshAuthGuard } from './guards/refresh-auth/refresh-auth.guard';
 import { ZodValidationPipe } from './pipes/zodValidationPipe';
 
 @Controller('auth')
@@ -21,11 +22,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
-    const token = this.authService.login(req.user.id);
-
-    return {
-      token,
-    };
+    return this.authService.login(req.user.id);
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -33,5 +30,12 @@ export class AuthController {
   @Post('register')
   async register(@Body() body: RegisterDto) {
     return this.authService.register(body);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(RefreshAuthGuard)
+  @Post('refresh')
+  async refresh(@Request() req) {
+    return this.authService.refresh(req.user.id);
   }
 }
