@@ -36,4 +36,25 @@ export class UserService {
 
     return;
   }
+
+  async findById(id: string) {
+    const user = await this.db
+      .select({
+        id: users.id,
+        username: users.username,
+        email: users.email,
+        role: users.role,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+        deleted: users.deleted,
+      })
+      .from(users)
+      .where(eq(users.id, id));
+
+    if (user.length > 0) {
+      return user[0];
+    }
+
+    return null;
+  }
 }

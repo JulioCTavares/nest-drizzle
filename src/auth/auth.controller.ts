@@ -17,10 +17,15 @@ import { ZodValidationPipe } from './pipes/zodValidationPipe';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
-    return req.user;
+    const token = this.authService.login(req.user.id);
+
+    return {
+      token,
+    };
   }
 
   @HttpCode(HttpStatus.CREATED)
