@@ -5,6 +5,8 @@ import { compare } from 'bcrypt';
 import { UserService } from 'src/user/user.service';
 import refreshJwtConfig from './config/refresh-jwt.config';
 import { RegisterDto } from './dto/register.dto';
+import { Role } from './enum/roleEnum';
+import { CurrentUser } from './types/currentUser';
 import { JwtPayload } from './types/jwtPayload';
 
 @Injectable()
@@ -58,5 +60,15 @@ export class AuthService {
     return {
       access_token: token,
     };
+  }
+
+  async validateJWTUser(userId: string) {
+    const user = await this.userService.findById(userId);
+
+    if (!user) throw new UnauthorizedException('Invalid credential!');
+
+    const currentUser: CurrentUser = { id: user.id, role: user.role as Role };
+
+    return currentUser;
   }
 }
