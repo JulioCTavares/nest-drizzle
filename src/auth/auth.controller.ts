@@ -9,6 +9,7 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { Public } from './decorators/public.decorator';
 import { RegisterDto, registerSchema } from './dto/register.dto';
 import { LocalAuthGuard } from './guards/local-auth/local-auth.guard';
 import { RefreshAuthGuard } from './guards/refresh-auth/refresh-auth.guard';
@@ -18,6 +19,7 @@ import { ZodValidationPipe } from './pipes/zodValidationPipe';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -32,6 +34,7 @@ export class AuthController {
     return this.authService.register(body);
   }
 
+  @Public()
   @HttpCode(HttpStatus.OK)
   @UseGuards(RefreshAuthGuard)
   @Post('refresh')
