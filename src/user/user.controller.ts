@@ -5,6 +5,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/auth/enum/roleEnum';
 import { UserService } from './user.service';
 
 @ApiTags('Users')
@@ -12,7 +14,7 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get current user data' })
   @ApiResponse({ status: 200, description: 'User data retrieved successfully' })
@@ -22,7 +24,7 @@ export class UserController {
     return await this.userService.findById(req.user.id);
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all users (Admin only)' })
   @ApiResponse({
@@ -30,6 +32,7 @@ export class UserController {
     description: 'List of users retrieved successfully',
   })
   @ApiResponse({ status: 403, description: 'Forbidden for non-admin users' })
+  @Roles(Role.ADMIN)
   @Get('/')
   async findAll() {
     return 'List of users';

@@ -7,7 +7,13 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import { LoginDto } from './dto/login.dto';
@@ -61,6 +67,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh JWT token' })
   @ApiResponse({ status: 200, description: 'Token refreshed successfully' })
   @ApiResponse({ status: 401, description: 'Invalid refresh token' })
+  @ApiBearerAuth('refresh-token')
   @UseGuards(RefreshAuthGuard)
   @Post('refresh')
   async refresh(@Request() req) {

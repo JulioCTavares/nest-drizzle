@@ -19,6 +19,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/auth/enum/roleEnum';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProducts } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -29,7 +31,7 @@ import { ProductsService } from './products.service';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new product' })
   @ApiResponse({ status: 201, description: 'Product created successfully' })
@@ -48,12 +50,13 @@ export class ProductsController {
       },
     },
   })
+  @Roles(Role.ADMIN)
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all products' })
   @ApiResponse({
@@ -104,7 +107,7 @@ export class ProductsController {
     return this.productsService.findAll(query);
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get product by ID' })
   @ApiResponse({
@@ -123,7 +126,7 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a product by ID' })
   @ApiResponse({ status: 200, description: 'Product updated successfully' })
@@ -146,12 +149,13 @@ export class ProductsController {
       },
     },
   })
+  @Roles(Role.ADMIN)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productsService.update(id, updateProductDto);
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Soft delete a product by ID' })
   @ApiResponse({
@@ -165,12 +169,13 @@ export class ProductsController {
     description: 'Product ID',
     example: '2697785c-e875-410e-9933-62a52ee83047',
   })
+  @Roles(Role.ADMIN)
   @Patch(':id/soft-delete')
   softDelete(@Param('id') id: string) {
     return this.productsService.softDelete(id);
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete a product by ID' })
   @ApiResponse({ status: 204, description: 'Product deleted successfully' })
@@ -181,6 +186,7 @@ export class ProductsController {
     description: 'Product ID',
     example: '2697785c-e875-410e-9933-62a52ee83047',
   })
+  @Roles(Role.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.productsService.remove(id);

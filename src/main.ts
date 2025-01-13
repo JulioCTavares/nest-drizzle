@@ -9,6 +9,14 @@ async function bootstrap() {
     .setVersion('1.0')
     .setDescription('Ecommerce API Documentation')
     .setTitle('Ecommerce API')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'access-token',
+    )
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'refresh-token',
+    )
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);
