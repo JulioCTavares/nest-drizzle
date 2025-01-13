@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
 import { UserService } from 'src/user/user.service';
 import refreshJwtConfig from './config/refresh-jwt.config';
+import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { Role } from './enum/roleEnum';
 import { CurrentUser } from './types/currentUser';
@@ -35,9 +36,19 @@ export class AuthService {
     return this.userService.create(data);
   }
 
-  login(userId: string) {
+  async login(data: LoginDto) {
+    const user = await this.userService.findByEmail(data.email);
+
+    if (!user) throw new UnauthorizedException('Invalid credential!');
+
+    const isPasswordMatched = await compare(data.password, user.password);
+
+    if (!isPasswordMatched)
+      throw new UnauthorizedException('Invalid credential!');
+
     const payload: JwtPayload = {
-      sub: userId,
+      sub: user.id,
+      role: user.role as Role,
     };
 
     const token = this.jwtService.sign(payload);
